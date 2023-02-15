@@ -30,6 +30,7 @@ var
   contadorCobranzas:      Integer;
   contadorIngresos:       Integer;
   contadorClientes:       Integer;
+  contadorStock:          Integer;
 
   //Datos de base de datos
   //compartidos
@@ -1233,7 +1234,7 @@ begin
                     begin
                       Unit2.DataModule2.ADOQuery1.SQL.Clear;
                       Unit2.DataModule2.ADOQuery1.SQL.text := 'Insert into itefac '
-                      +'(Id,'
+                      +'(Id_aux,'
                       +'Numero,'
                       +'Cantidad,'
                       +'CodArticulo,'
@@ -1252,7 +1253,7 @@ begin
                       +'id_tabla,'
                       +'Base_datos)'
                       + 'value             '
-                      +'(:Id,'
+                      +'(:Id_aux,'
                       +':Numero,'
                       +':Cantidad,'
                       +':CodArticulo,'
@@ -1272,7 +1273,7 @@ begin
                       +':Base_datos)';
 
 
-                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Id').Value := Id;
+                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Id_aux').Value := Id;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Numero').Value := Numero;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Cantidad').Value := Cantidad;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('CodArticulo').Value := CodArticulo;
@@ -1389,7 +1390,7 @@ begin
                       Unit2.DataModule2.ADOQuery1.SQL.text := 'Insert into iteremito '
                       +'(Costo,'
                       +'NroIva,'
-                      +'id,'
+                      +'id_aux,'
                       +'Cantidad,'
                       +'CodArticulo,'
                       +'Descripcion,'
@@ -1411,7 +1412,7 @@ begin
                       + 'value             '
                       +'(:Costo,'
                       +':NroIva,'
-                      +':id,'
+                      +':id_aux,'
                       +':Cantidad,'
                       +':CodArticulo,'
                       +':Descripcion,'
@@ -1434,7 +1435,7 @@ begin
 
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Costo').Value := Costo;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('NroIva').Value := NroIva;
-                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('id').Value := id;
+                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('id_aux').Value := id;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Cantidad').Value := Cantidad;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('CodArticulo').Value := CodArticulo;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Descripcion').Value := Descripcion;
@@ -1476,7 +1477,7 @@ begin
           //*************************************************************************************************************
           //************************************ TABLA ARTICULOS ********************************************************
           //*************************************************************************************************************
-          if (BD_name[4] = 'Lisboa' ) then
+          if (BD_name[4] = 'Lisboa' ) then        // Solo genera articulos de una sola BD
             begin
               // inicializa contador
               contadorArticulos := 0;
@@ -1484,6 +1485,18 @@ begin
               //Cierro Base de datos
               Unit2.DataModule2.ABSQuery1.Close;
               Unit2.DataModule2.ADOQuery1.Close;
+
+              //Limpio Query
+              Unit2.DataModule2.ABSQuery1.SQL.Clear;
+
+              //Elimita todos los campos de la tabla. Ya que no es una tabla que incremente
+              Unit2.DataModule2.ABSQuery1.SQL.Clear;
+
+              //GENERA QUERY PARA ELIMINAR DATOS
+              Unit2.DataModule2.ADOQuery1.Close;
+              Unit2.DataModule2.ADOQuery1.SQL.Clear;
+              Unit2.DataModule2.ADOQuery1.SQL.text := 'Delete from articulos;';
+              Unit2.DataModule2.ADOQuery1.ExecSQL;     //ejecuta query que no espera un resultado
 
               //Limpio Query
               Unit2.DataModule2.ABSQuery1.SQL.Clear;
@@ -1498,8 +1511,8 @@ begin
               Unit2.DataModule2.ADOQuery1.Close;
               Unit2.DataModule2.ADOQuery1.SQL.Clear;
               Unit2.DataModule2.ADOQuery1.SQL.text := 'Select MAX(ID_tabla) id from articulos where Base_datos = :Base_datos ;';
-              Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
-              Unit2.DataModule2.ADOQuery1.Open;
+              Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];   //seteo parametro del query
+              Unit2.DataModule2.ADOQuery1.Open;                                                       //ejecuta query
 
               MaxValorEgreso_unif := Unit2.DataModule2.ADOQuery1.FieldByName('id').AsInteger;
 
@@ -1706,6 +1719,102 @@ begin
             begin
                 Msg := Msg + #13 + 'Tabla Articulos - No se proceso para la BD ' +  BD_name[4];
             end;
+
+
+          //*************************************************************************************************************
+          //************************************ TABLA STOCK****************************************************
+          //*************************************************************************************************************
+
+              // inicializa contador
+              contadorStock:=0;
+
+              //Cierro Base de datos
+              Unit2.DataModule2.ABSQuery1.Close;
+              Unit2.DataModule2.ADOQuery1.Close;
+
+              //Limpio Query
+              Unit2.DataModule2.ABSQuery1.SQL.Clear;
+
+              //Elimita todos los campos de la tabla. Ya que no es una tabla que incremente
+              Unit2.DataModule2.ABSQuery1.SQL.Clear;
+
+              //GENERA QUERY PARA ELIMINAR DATOS
+              Unit2.DataModule2.ADOQuery1.Close;
+              Unit2.DataModule2.ADOQuery1.SQL.Clear;
+              Unit2.DataModule2.ADOQuery1.SQL.text := 'Delete from stock where Base_datos = :Base_datos ;';
+              Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];   //seteo parametro del query
+              Unit2.DataModule2.ADOQuery1.ExecSQL; //ejecuta query que no espera un resultado
+
+              //Limpio Query
+              Unit2.DataModule2.ABSQuery1.SQL.Clear;
+
+              //    CARGA LA TABLA STOCK
+
+
+              //Seteo Query recuperando toda la informacion de la tabla articulos
+              Unit2.DataModule2.ABSQuery1.SQL.text := 'Select * from tbarticulos;';
+
+              //Ejecuto sentencia
+              //Unit2.DataModule2.ABSQuery1.ExecSQL;
+              Unit2.DataModule2.ABSQuery1.Open;
+
+
+              try
+                Unit2.DataModule2.ABSQuery1.First;
+                while not  Unit2.DataModule2.ABSQuery1.Eof  do
+                begin
+                  // cargo los datos de la tabla del sistema en variables
+                  ID_tabla              := Unit2.DataModule2.ABSQuery1.FieldByName('id').AsInteger;
+                  CodigoStr             := Unit2.DataModule2.ABSQuery1.FieldByName('Codigo').AsString;
+                  Rubro                 := Unit2.DataModule2.ABSQuery1.FieldByName('Rubro').AsString;
+                  Descripcion           := Unit2.DataModule2.ABSQuery1.FieldByName('Descripcion').AsString;
+                  Marca                 := Unit2.DataModule2.ABSQuery1.FieldByName('Marca').AsString;
+                  Stock                 := Unit2.DataModule2.ABSQuery1.FieldByName('Stock').AsFloat;
+
+
+                  Unit2.DataModule2.ADOQuery1.SQL.Clear;
+                  Unit2.DataModule2.ADOQuery1.SQL.text := 'Insert into stock '
+                  +'(Codigo,'
+                  +'Descripcion,'
+                  +'Rubro,'
+                  +'Marca,'
+                  +'Stock,'
+                  +'id_tabla,'
+                  +'Base_datos)'
+                  + 'value             '
+                  +'(:Codigo,'
+                  +':Descripcion,'
+                  +':Rubro,'
+                  +':Marca,'
+                  +':Stock,'
+                  +':id_tabla,'
+                  +':Base_datos)';
+
+                  // carga los parametros para el INSERT
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Codigo').Value := CodigoStr;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Descripcion').Value := Descripcion;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Rubro').Value := Rubro;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Marca').Value := Marca;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Stock').Value := Stock;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('id_tabla').Value := id_tabla;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
+                  Unit2.DataModule2.ADOQuery1.ExecSQL;   // ejecuta query
+                  contadorArticulos := contadorStock + 1;
+
+                  Unit2.DataModule2.ABSQuery1.Next;
+                end;
+
+              finally
+                Unit2.DataModule2.ABSQuery1.Close;
+                Unit2.DataModule2.ADOQuery1.Close;
+                Msg := Msg + #13 + 'Tabla Stock - Cant. insertados: ' + InttoStr(contadorStock);
+              end;
+
+
+
+
+
+
           //*************************************************************************************************************
           //************************************ TABLA COBRANZAS ********************************************************
           //*************************************************************************************************************
@@ -1801,7 +1910,7 @@ begin
                       +'ReciboNro,'
                       +'Obs,'
                       +'Tipo,'
-                      +'Id,'
+                      +'Id_aux,'
                       +'FormaPago,'
                       +'NroCheque,'
                       +'Banco,'
@@ -1824,7 +1933,7 @@ begin
                       +':ReciboNro,'
                       +':Obs,'
                       +':Tipo,'
-                      +':Id,'
+                      +':Id_aux,'
                       +':FormaPago,'
                       +':NroCheque,'
                       +':Banco,'
@@ -1848,7 +1957,7 @@ begin
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('ReciboNro').Value := ReciboNro;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Obs').Value := Obs;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Tipo').Value := Tipo;
-                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Id').Value := Id;
+                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Id_aux').Value := Id;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('FormaPago').Value := FormaPago;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('NroCheque').Value := NroCheque;
                       Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Banco').Value := Banco;

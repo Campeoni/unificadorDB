@@ -386,6 +386,15 @@ type
     TLocalVendedoresZona: TStringField;
     TLocalVendedoresComisionSobreNeto: TBooleanField;
     TLocalVendedoresClave: TStringField;
+    TLisboaStock: TADOTable;
+    TLisboaStockid: TAutoIncField;
+    TLisboaStockCodigo: TStringField;
+    TLisboaStockDescripcion: TStringField;
+    TLisboaStockRubro: TStringField;
+    TLisboaStockMarca: TStringField;
+    TLisboaStockStock: TFloatField;
+    TLisboaStockid_tabla: TIntegerField;
+    TLisboaStockBase_datos: TStringField;
   private
     { Private declarations }
   public

@@ -1,9 +1,9 @@
 object DataModule2: TDataModule2
   OldCreateOrder = False
-  Height = 610
+  Height = 700
   Width = 1030
   object TLocalEgresos: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -84,7 +84,7 @@ object DataModule2: TDataModule2
   end
   object BDLocal: TABSDatabase
     Connected = True
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseFileName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     Exclusive = False
@@ -95,7 +95,7 @@ object DataModule2: TDataModule2
     Top = 102
   end
   object TLocalFacturas: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -577,7 +577,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalRemito: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -910,7 +910,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalVendedores: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -1085,7 +1085,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalItemsFac: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -1234,7 +1234,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalItemsRemito: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -1408,7 +1408,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalArticulos: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -2117,7 +2117,7 @@ object DataModule2: TDataModule2
     Top = 332
   end
   object ABSQuery1: TABSQuery
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -2131,7 +2131,7 @@ object DataModule2: TDataModule2
     Top = 48
   end
   object TLocalCobranzas: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -2324,7 +2324,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalIngresos: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -2405,7 +2405,7 @@ object DataModule2: TDataModule2
     end
   end
   object TLocalClientes: TABSTable
-    CurrentVersion = '7.92 '
+    CurrentVersion = '7.93 '
     DatabaseName = 'C:\Users\Campeoni\Desktop\tablas\tablas.abs'
     InMemory = False
     ReadOnly = False
@@ -2773,5 +2773,39 @@ object DataModule2: TDataModule2
     TableName = 'clientes'
     Left = 160
     Top = 568
+  end
+  object TLisboaStock: TADOTable
+    Connection = BDLisboa
+    CursorType = ctStatic
+    TableName = 'stock'
+    Left = 160
+    Top = 626
+    object TLisboaStockid: TAutoIncField
+      FieldName = 'id'
+      ReadOnly = True
+    end
+    object TLisboaStockCodigo: TStringField
+      FieldName = 'Codigo'
+    end
+    object TLisboaStockDescripcion: TStringField
+      FieldName = 'Descripcion'
+      Size = 50
+    end
+    object TLisboaStockRubro: TStringField
+      FieldName = 'Rubro'
+      Size = 25
+    end
+    object TLisboaStockMarca: TStringField
+      FieldName = 'Marca'
+    end
+    object TLisboaStockStock: TFloatField
+      FieldName = 'Stock'
+    end
+    object TLisboaStockid_tabla: TIntegerField
+      FieldName = 'id_tabla'
+    end
+    object TLisboaStockBase_datos: TStringField
+      FieldName = 'Base_datos'
+    end
   end
 end
