@@ -11,6 +11,7 @@ type
     Button1: TButton;
     DateTimePicker1: TDateTimePicker;
     procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     { Private declarations }
@@ -202,6 +203,8 @@ var
 implementation
 
 {$R *.dfm}
+
+
 
 //Funcion a la cual se le debe pasar la carpeta donde estan las distintas bases de datos. Cada carpeta dentro de esta debe tener el nombre de
 // la base de datos con la cual se va a almacenar en la tabla centralizadora
@@ -1799,7 +1802,8 @@ begin
                   Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('id_tabla').Value := id_tabla;
                   Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
                   Unit2.DataModule2.ADOQuery1.ExecSQL;   // ejecuta query
-                  contadorArticulos := contadorStock + 1;
+
+                  contadorStock := contadorStock + 1;
 
                   Unit2.DataModule2.ABSQuery1.Next;
                 end;
@@ -2128,4 +2132,11 @@ begin
 //      Tabla2.Post;
 //      Tabla1.Next;
 end;
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+
+  DateTimePicker1.Date :=  Now;
+
+end;
+
 end.

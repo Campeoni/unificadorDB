@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -27,7 +28,7 @@ object Form1: TForm1
     Top = 112
     Width = 105
     Height = 21
-    Date = 44607.000000000000000000
+    Date = 44971.000000000000000000
     Time = 0.703955185184895500
     TabOrder = 1
   end
