@@ -218,9 +218,9 @@ begin
        begin
           if (sr.Attr and faDirectory)<>0 then
           begin
-             // Para añadir la carpeta actual
+             // Para aÃ±adir la carpeta actual
              Salida.Add(Dir + '\' + sr.Name);
-             // Para añadir subcarpetas
+             // Para aÃ±adir subcarpetas
              ListFolder(Dir + '\' + sr.Name, Salida);
           end;
        end;
@@ -1006,159 +1006,145 @@ begin
           //*************************************************************************************************************
           //************************************ TABLA VENDEDORES *******************************************************
           //*************************************************************************************************************
+          // inicializa contador
+          contadorVendedores := 0;
 
-          if (BD_name[4] = 'Lisboa' ) then
-            begin
+          //Cierro Base de datos
+          //Unit2.DataModule2.ABSQuery1.Close;
+          //Unit2.DataModule2.ADOQuery1.Close;
 
-              // inicializa contador
-              contadorVendedores := 0;
+          //Limpio Query
+          Unit2.DataModule2.ABSQuery1.SQL.Clear;
 
-              //Cierro Base de datos
+          //Recupera Maximo ID de la tabla para comprara con el max de la tabla unificada
+          Unit2.DataModule2.ABSQuery1.SQL.text := 'Select MAX(id) id from tbvendedores;';
+          Unit2.DataModule2.ABSQuery1.Open;
+          MaxValorEgreso_base := Unit2.DataModule2.ABSQuery1.FieldByName('id').AsInteger;
+
+
+          //Recupera Maximo ID de la tabla para comprara con el max de la tabla base
+          Unit2.DataModule2.ADOQuery1.Close;
+          Unit2.DataModule2.ADOQuery1.SQL.Clear;
+          Unit2.DataModule2.ADOQuery1.SQL.text := 'Select MAX(ID_tabla) id from vendedores where Base_datos = :Base_datos ;';
+          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
+          Unit2.DataModule2.ADOQuery1.Open;
+
+          MaxValorEgreso_unif := Unit2.DataModule2.ADOQuery1.FieldByName('id').AsInteger;
+
+          //Compara los maximos ID para ver si ingreso algun nuevo registro
+          if (MaxValorEgreso_unif <> MaxValorEgreso_base)  then
+          begin
+            //Seteo Query
+            Unit2.DataModule2.ABSQuery1.SQL.text := 'Select * from tbvendedores;';
+
+            //Ejecuto sentencia
+            //Unit2.DataModule2.ABSQuery1.ExecSQL;
+            Unit2.DataModule2.ABSQuery1.Open;
+
+            try
+              Unit2.DataModule2.ABSQuery1.First;
+              while not  Unit2.DataModule2.ABSQuery1.Eof  do
+              begin
+                ID_tabla            := Unit2.DataModule2.ABSQuery1.FieldByName('id').AsInteger;
+                Codigo              := Unit2.DataModule2.ABSQuery1.FieldByName('Codigo').AsInteger;
+                Nombre              := Unit2.DataModule2.ABSQuery1.FieldByName('Nombre').AsString;
+                Direccion           := Unit2.DataModule2.ABSQuery1.FieldByName('Direccion').AsString;
+                Telefono            := Unit2.DataModule2.ABSQuery1.FieldByName('Telefono').AsString;
+                Celular             := Unit2.DataModule2.ABSQuery1.FieldByName('Celular').AsString;
+                Sueldo              := Unit2.DataModule2.ABSQuery1.FieldByName('Sueldo').AsFloat;
+                Comision            := Unit2.DataModule2.ABSQuery1.FieldByName('Comision').AsFloat;
+                mail                := Unit2.DataModule2.ABSQuery1.FieldByName('mail').AsString;
+                Documento           := Unit2.DataModule2.ABSQuery1.FieldByName('Documento').AsString;
+                Localidad           := Unit2.DataModule2.ABSQuery1.FieldByName('Localidad').AsString;
+                Provincia           := Unit2.DataModule2.ABSQuery1.FieldByName('Provincia').AsString;
+                CP                  := Unit2.DataModule2.ABSQuery1.FieldByName('CP').AsString;
+                Zona                := Unit2.DataModule2.ABSQuery1.FieldByName('Zona').AsString;
+                ComisionSobreNeto   := Unit2.DataModule2.ABSQuery1.FieldByName('ComisionSobreNeto').AsBoolean;
+                Clave               := Unit2.DataModule2.ABSQuery1.FieldByName('Clave').AsString;
+
+                Unit2.DataModule2.ADOQuery1.Close;
+                Unit2.DataModule2.ADOQuery1.SQL.Clear;
+                Unit2.DataModule2.ADOQuery1.SQL.text := 'Select * from vendedores where id_tabla = :Id_tabla and Base_datos = :Base_datos ;';
+                Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Id_tabla').Value := ID_tabla;
+                Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
+                Unit2.DataModule2.ADOQuery1.Open;
+
+                // Valida que el ID de la tabla a guardar no este ya cargado para no duplicar registros.
+                // Si ya existe continua con el siguiente registro. En caso de no existir lo inserta
+                if (Unit2.DataModule2.ADOQuery1.IsEmpty)  then
+                begin
+                  Unit2.DataModule2.ADOQuery1.SQL.Clear;
+                  Unit2.DataModule2.ADOQuery1.SQL.text := 'Insert into vendedores '
+                  +'(Codigo,'
+                  +'Nombre,'
+                  +'Direccion,'
+                  +'Telefono,'
+                  +'Celular,'
+                  +'Sueldo,'
+                  +'Comision,'
+                  +'mail,'
+                  +'Documento,'
+                  +'Localidad,'
+                  +'Provincia,'
+                  +'CP,'
+                  +'Zona,'
+                  +'ComisionSobreNeto,'
+                  +'Clave,'
+                  +'id_tabla,'
+                  +'Base_datos)'
+                  + 'value             '
+                  +'(:Codigo,'
+                  +':Nombre,'
+                  +':Direccion,'
+                  +':Telefono,'
+                  +':Celular,'
+                  +':Sueldo,'
+                  +':Comision,'
+                  +':mail,'
+                  +':Documento,'
+                  +':Localidad,'
+                  +':Provincia,'
+                  +':CP,'
+                  +':Zona,'
+                  +':ComisionSobreNeto,'
+                  +':Clave,'
+                  +':id_tabla,'
+                  +':Base_datos)';
+
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Codigo').Value := Codigo;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Nombre').Value := Nombre;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Direccion').Value := Direccion;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Telefono').Value := Telefono;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Celular').Value := Celular;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Sueldo').Value := Sueldo;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Comision').Value := Comision;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('mail').Value := mail;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Documento').Value := Documento;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Localidad').Value := Localidad;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Provincia').Value := Provincia;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('CP').Value := CP;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Zona').Value := Zona;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('ComisionSobreNeto').Value := ComisionSobreNeto;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Clave').Value := Clave;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('id_tabla').Value := id_tabla;
+                  Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
+                  Unit2.DataModule2.ADOQuery1.ExecSQL;
+                  contadorVendedores := contadorVendedores + 1 ;
+                end;
+
+                Unit2.DataModule2.ABSQuery1.Next;
+              end;
+
+            finally
               Unit2.DataModule2.ABSQuery1.Close;
               Unit2.DataModule2.ADOQuery1.Close;
-
-              //Limpio Query
-              Unit2.DataModule2.ABSQuery1.SQL.Clear;
-
-              //Recupera Maximo ID de la tabla para comprara con el max de la tabla unificada
-              Unit2.DataModule2.ABSQuery1.SQL.text := 'Select MAX(id) id from tbvendedores;';
-              Unit2.DataModule2.ABSQuery1.Open;
-              MaxValorEgreso_base := Unit2.DataModule2.ABSQuery1.FieldByName('id').AsInteger;
-
-
-              //Recupera Maximo ID de la tabla para comprara con el max de la tabla base
-              Unit2.DataModule2.ADOQuery1.Close;
-              Unit2.DataModule2.ADOQuery1.SQL.Clear;
-              Unit2.DataModule2.ADOQuery1.SQL.text := 'Select MAX(ID_tabla) id from vendedores where Base_datos = :Base_datos ;';
-              Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
-              Unit2.DataModule2.ADOQuery1.Open;
-
-              MaxValorEgreso_unif := Unit2.DataModule2.ADOQuery1.FieldByName('id').AsInteger;
-
-             //Compara los maximos ID para ver si ingreso algun nuevo registro
-              if (MaxValorEgreso_unif <> MaxValorEgreso_base)  then
-                begin
-                  //Seteo Query
-                  Unit2.DataModule2.ABSQuery1.SQL.text := 'Select * from tbvendedores;';
-
-                  //Ejecuto sentencia
-                  //Unit2.DataModule2.ABSQuery1.ExecSQL;
-                  Unit2.DataModule2.ABSQuery1.Open;
-
-
-                  try
-                    Unit2.DataModule2.ABSQuery1.First;
-                    while not  Unit2.DataModule2.ABSQuery1.Eof  do
-                    begin
-                      ID_tabla            := Unit2.DataModule2.ABSQuery1.FieldByName('id').AsInteger;
-                      Codigo              := Unit2.DataModule2.ABSQuery1.FieldByName('Codigo').AsInteger;
-                      Nombre              := Unit2.DataModule2.ABSQuery1.FieldByName('Nombre').AsString;
-                      Direccion           := Unit2.DataModule2.ABSQuery1.FieldByName('Direccion').AsString;
-                      Telefono            := Unit2.DataModule2.ABSQuery1.FieldByName('Telefono').AsString;
-                      Celular             := Unit2.DataModule2.ABSQuery1.FieldByName('Celular').AsString;
-                      Sueldo              := Unit2.DataModule2.ABSQuery1.FieldByName('Sueldo').AsFloat;
-                      Comision            := Unit2.DataModule2.ABSQuery1.FieldByName('Comision').AsFloat;
-                      mail                := Unit2.DataModule2.ABSQuery1.FieldByName('mail').AsString;
-                      Documento           := Unit2.DataModule2.ABSQuery1.FieldByName('Documento').AsString;
-                      Localidad           := Unit2.DataModule2.ABSQuery1.FieldByName('Localidad').AsString;
-                      Provincia           := Unit2.DataModule2.ABSQuery1.FieldByName('Provincia').AsString;
-                      CP                  := Unit2.DataModule2.ABSQuery1.FieldByName('CP').AsString;
-                      Zona                := Unit2.DataModule2.ABSQuery1.FieldByName('Zona').AsString;
-                      ComisionSobreNeto   := Unit2.DataModule2.ABSQuery1.FieldByName('ComisionSobreNeto').AsBoolean;
-                      Clave               := Unit2.DataModule2.ABSQuery1.FieldByName('Clave').AsString;
-
-
-
-                      Unit2.DataModule2.ADOQuery1.Close;
-                      Unit2.DataModule2.ADOQuery1.SQL.Clear;
-                      Unit2.DataModule2.ADOQuery1.SQL.text := 'Select * from vendedores where id_tabla = :Id_tabla and Base_datos = :Base_datos ;';
-                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Id_tabla').Value := ID_tabla;
-                      Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
-                      Unit2.DataModule2.ADOQuery1.Open;
-
-                      // Valida que el ID de la tabla a guardar no este ya cargado para no duplicar registros.
-                      // Si ya existe continua con el siguiente registro. En caso de no existir lo inserta
-                      if (Unit2.DataModule2.ADOQuery1.IsEmpty)  then
-                        begin
-                          Unit2.DataModule2.ADOQuery1.SQL.Clear;
-                          Unit2.DataModule2.ADOQuery1.SQL.text := 'Insert into vendedores '
-                          +'(Codigo,'
-                          +'Nombre,'
-                          +'Direccion,'
-                          +'Telefono,'
-                          +'Celular,'
-                          +'Sueldo,'
-                          +'Comision,'
-                          +'mail,'
-                          +'Documento,'
-                          +'Localidad,'
-                          +'Provincia,'
-                          +'CP,'
-                          +'Zona,'
-                          +'ComisionSobreNeto,'
-                          +'Clave,'
-                          +'id_tabla,'
-                          +'Base_datos)'
-                          + 'value             '
-                          +'(:Codigo,'
-                          +':Nombre,'
-                          +':Direccion,'
-                          +':Telefono,'
-                          +':Celular,'
-                          +':Sueldo,'
-                          +':Comision,'
-                          +':mail,'
-                          +':Documento,'
-                          +':Localidad,'
-                          +':Provincia,'
-                          +':CP,'
-                          +':Zona,'
-                          +':ComisionSobreNeto,'
-                          +':Clave,'
-                          +':id_tabla,'
-                          +':Base_datos)';
-
-
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Codigo').Value := Codigo;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Nombre').Value := Nombre;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Direccion').Value := Direccion;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Telefono').Value := Telefono;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Celular').Value := Celular;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Sueldo').Value := Sueldo;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Comision').Value := Comision;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('mail').Value := mail;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Documento').Value := Documento;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Localidad').Value := Localidad;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Provincia').Value := Provincia;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('CP').Value := CP;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Zona').Value := Zona;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('ComisionSobreNeto').Value := ComisionSobreNeto;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Clave').Value := Clave;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('id_tabla').Value := id_tabla;
-                          Unit2.DataModule2.ADOQuery1.Parameters.ParamByName('Base_datos').Value := BD_name[4];
-                          Unit2.DataModule2.ADOQuery1.ExecSQL;
-                          contadorVendedores := contadorVendedores + 1 ;
-                        end;
-
-                      Unit2.DataModule2.ABSQuery1.Next;
-                    end;
-
-                  finally
-                    Unit2.DataModule2.ABSQuery1.Close;
-                    Unit2.DataModule2.ADOQuery1.Close;
-                    Msg := Msg + #13 + 'Tabla Vendedores - Cant. insertados: ' + InttoStr(contadorVendedores);
-                  end;
-                end
-              Else
-                begin
-                  Msg := Msg + #13 + 'Tabla Vendedores - No tuvo ningun nuevo registro';
-                end;
-            end
-          Else
-            begin
-               Msg := Msg + #13 + 'Tabla Vendedores - No se proceso para la BD ' +  BD_name[4];
+              Msg := Msg + #13 + 'Tabla Vendedores - Cant. insertados: ' + InttoStr(contadorVendedores);
             end;
-
+          end
+          Else
+          begin
+            Msg := Msg + #13 + 'Tabla Vendedores - No tuvo ningun nuevo registro';
+          end;
 
           //*************************************************************************************************************
           //************************************ TABLA ITEM FACTURA *****************************************************
